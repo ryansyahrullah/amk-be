@@ -16,6 +16,10 @@ GO111MODULE=on go run cmd/api/main.go
 
 Pastikan database MySQL bernama `amk_db` sudah tersedia sesuai variabel `DB_*` di `.env`.
 
+> **Catatan koneksi database**
+>
+> Nilai default `.env.example` untuk `DB_HOST` adalah `db` agar cocok dengan jaringan internal Docker. Loader konfigurasi otomatis akan mengganti ke `127.0.0.1` bila host tersebut tidak bisa di-resolve (misalnya saat menjalankan `go run` langsung di mesin lokal). Pastikan MySQL berjalan di `localhost:3306` atau ubah `DB_HOST` sesuai alamat server Anda.
+
 ## Variabel lingkungan penting
 
 | Variabel | Deskripsi |

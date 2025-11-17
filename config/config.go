@@ -2,8 +2,11 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"net"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -52,7 +55,7 @@ func Load() (*AppConfig, error) {
 			AppName:   getEnv("APP_NAME", "AMK BE"),
 			AppPort:   getEnv("APP_PORT", "3000"),
 			AppEnv:    getEnv("APP_ENV", "development"),
-			DBHost:    getEnv("DB_HOST", "127.0.0.1"),
+			DBHost:    normalizeDBHost(getEnv("DB_HOST", "127.0.0.1")),
 			DBPort:    getEnv("DB_PORT", "3306"),
 			DBUser:    getEnv("DB_USER", "root"),
 			DBPass:    getEnv("DB_PASS", ""),
@@ -142,4 +145,19 @@ func parseInt(value string) int {
 		return 0
 	}
 	return i
+}
+
+func normalizeDBHost(value string) string {
+	host := strings.TrimSpace(value)
+	if host == "" {
+		return "127.0.0.1"
+	}
+	if net.ParseIP(host) != nil || host == "localhost" {
+		return host
+	}
+	if _, err := net.LookupHost(host); err != nil {
+		log.Printf("config: DB_HOST=%q tidak bisa di-resolve, fallback ke 127.0.0.1", host)
+		return "127.0.0.1"
+	}
+	return host
 }
