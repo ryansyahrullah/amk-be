@@ -14,7 +14,7 @@ export $(grep -v '^#' .env | xargs) # opsional ketika tidak menggunakan docker
 GO111MODULE=on go run cmd/api/main.go
 ```
 
-Pastikan database MySQL sudah tersedia sesuai variabel `DB_*` di `.env`.
+Pastikan database MySQL bernama `amk_db` sudah tersedia sesuai variabel `DB_*` di `.env`.
 
 ## Variabel lingkungan penting
 

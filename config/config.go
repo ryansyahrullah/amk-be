@@ -56,7 +56,7 @@ func Load() (*AppConfig, error) {
 			DBPort:    getEnv("DB_PORT", "3306"),
 			DBUser:    getEnv("DB_USER", "root"),
 			DBPass:    getEnv("DB_PASS", ""),
-			DBName:    getEnv("DB_NAME", "amk"),
+			DBName:    getEnv("DB_NAME", "amk_db"),
 			JWTSecret: getEnv("JWT_SECRET", "secret"),
 			JWTTTL:    ttl,
 			SMTPHost:  getEnv("SMTP_HOST", ""),
@@ -101,6 +101,13 @@ func InitDB() (*gorm.DB, error) {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
+		return nil, err
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	if err := sqlDB.Ping(); err != nil {
 		return nil, err
 	}
 
