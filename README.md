@@ -9,16 +9,29 @@ Backend monolith sederhana berbasis [Fiber](https://github.com/gofiber/fiber) da
 ## Menjalankan aplikasi
 
 ```bash
-cp .env.example .env # sesuaikan konfigurasi
-export $(grep -v '^#' .env | xargs) # opsional ketika tidak menggunakan docker
-GO111MODULE=on go run cmd/api/main.go
+cp .env.example .env
+# Edit .env bila perlu lalu jalankan dependency
+docker compose up -d db mailhog
+
+# Setelah MySQL siap, jalankan API dari host
+go run ./cmd/api
 ```
 
-Pastikan database MySQL bernama `amk_db` sudah tersedia sesuai variabel `DB_*` di `.env`.
+Pastikan database MySQL bernama `amk_db` sudah tersedia. Perintah `docker compose` di atas akan otomatis membuat database beserta user `amk`/`amk123` dan menyambungkannya ke port 3306 host Anda sehingga `DB_HOST=127.0.0.1` di `.env` dapat langsung dipakai. Bila ingin menjalankan MySQL sendiri (bukan dari compose) cukup pastikan kredensial `.env` sesuai dengan server tersebut.
+
+### Menyesuaikan environment
+
+1. **Salin `.env.example`** ke `.env` lalu ubah nilai `DB_*` jika kredensial MySQL Anda berbeda.
+2. **Gunakan Docker Compose** untuk dependency default:
+   ```bash
+   docker compose up -d db mailhog
+   # tunggu healthcheck mysql hijau (docker compose ps)
+   ```
+3. **Jalankan API** memakai `go run ./cmd/api` atau `CompileDaemon` favorit Anda.
 
 > **Catatan koneksi database**
 >
-> Nilai default `.env.example` untuk `DB_HOST` adalah `db` agar cocok dengan jaringan internal Docker. Loader konfigurasi otomatis akan mengganti ke `127.0.0.1` bila host tersebut tidak bisa di-resolve (misalnya saat menjalankan `go run` langsung di mesin lokal). Pastikan MySQL berjalan di `localhost:3306` atau ubah `DB_HOST` sesuai alamat server Anda.
+> `.env.example` sekarang menyiapkan `DB_HOST=127.0.0.1` agar cocok untuk workflow lokal (host -> container MySQL). Bila Anda menjalankan API di dalam container compose yang sama, override variabel tersebut menjadi `db` karena nama service MySQL-nya memang `db`.
 
 ## Variabel lingkungan penting
 
@@ -75,3 +88,13 @@ fat            # modul jurnal umum
 ```
 
 Untuk detail struktur payload lihat berkas DTO pada masing-masing modul.
+
+## Menjalankan pengujian
+
+Seluruh paket saat ini belum memiliki unit test spesifik, namun Anda dapat memastikan dependensi terpasang dengan menjalankan:
+
+```bash
+go test ./...
+```
+
+Perintah tersebut hanya membutuhkan koneksi internet saat pertama kali untuk mengunduh modul Go.
