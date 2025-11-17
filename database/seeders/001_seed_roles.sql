@@ -1,0 +1,11 @@
+-- File: database/seeders/001_seed_roles.sql
+-- ---------------------------------------------------------
+-- Seeder untuk mengisi data awal tabel au_roles.
+-- Role default yang bisa diisi:
+--   - superadmin
+--   - admin_hcgs
+--   - admin_fat
+--   - direktur
+--   - pegawai
+--
+-- File ini membantu agar kamu punya role dasar tanpa perlu input manual.

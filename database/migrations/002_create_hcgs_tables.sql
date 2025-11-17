@@ -1,0 +1,7 @@
+-- File: database/migrations/002_create_hcgs_tables.sql
+-- ---------------------------------------------------------
+-- Migration ini membuat tabel-tabel untuk modul HC-GS.
+-- Minimal:
+--   - hc_pegawai
+--
+-- Tabel ini akan menampung data utama pegawai yang terhubung dengan au_users.nrp.

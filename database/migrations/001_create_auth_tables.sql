@@ -1,0 +1,10 @@
+-- File: database/migrations/001_create_auth_tables.sql
+-- ---------------------------------------------------------
+-- Migration ini berisi perintah SQL untuk membuat tabel-tabel modul AUTH:
+--   - au_roles
+--   - au_users
+--   - au_role_permissions
+--   - au_password_resets
+--
+-- Tujuan:
+--   - Menyiapkan struktur awal database untuk autentikasi & otorisasi.

@@ -1,0 +1,10 @@
+-- File: database/seeders/002_seed_permissions.sql
+-- ---------------------------------------------------------
+-- Seeder untuk mengisi data awal tabel au_role_permissions.
+-- Tujuan:
+--   - Mengatur hak akses awal misalnya:
+--       * pegawai: read-only di hc_pegawai (data diri sendiri via endpoint /me)
+--       * admin_hcgs: full CRUD di hc_pegawai
+--       * admin_fat: full CRUD di fa_jurnal_umum, read di hc_pegawai
+--       * direktur: read-only di hc_pegawai dan fa_jurnal_umum
+--       * superadmin: full akses semua tabel.
