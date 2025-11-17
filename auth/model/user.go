@@ -1,21 +1,22 @@
 package model
 
-// File: auth/model/user.go
-// ---------------------------------------------------------
-// File ini akan menyimpan definisi struct User untuk modul AUTH.
-// Struct User di sini akan dipetakan ke tabel database:
-//   - Nama tabel: au_users
-//   - Kolom penting: id, nrp, email, password_hash, full_name, role_id, is_active, created_at, updated_at
-//
-// User mewakili akun yang bisa login ke sistem:
-//   - Pegawai (role: pegawai)
-//   - Admin HC-GS (role: admin_hcgs)
-//   - Admin FAT (role: admin_fat)
-//   - Direktur (role: direktur)
-//   - Superadmin (role: superadmin)
-//
-// File ini terhubung dengan:
-//   - Role (lihat role.go) melalui role_id
-//   - hcgs/model/pegawai.go, karena saat membuat user baru, otomatis juga dibuat data pegawai.
-//   - auth/repository/user_repository.go untuk operasi DB (CRUD user)
-//   - auth/service/auth_service.go (proses login, cek password, buat token).
+import "time"
+
+// User mewakili akun yang dapat login ke aplikasi.
+type User struct {
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	NRP          string    `gorm:"size:20;uniqueIndex" json:"nrp"`
+	Email        string    `gorm:"size:120;uniqueIndex" json:"email"`
+	PasswordHash string    `gorm:"size:255" json:"-"`
+	FullName     string    `gorm:"size:120" json:"full_name"`
+	RoleID       uint      `json:"role_id"`
+	Role         Role      `json:"role"`
+	IsActive     bool      `gorm:"default:true" json:"is_active"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+// TableName memastikan GORM menggunakan nama tabel au_users.
+func (User) TableName() string {
+	return "au_users"
+}

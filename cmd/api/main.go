@@ -1,24 +1,30 @@
 package main
 
-// File: cmd/api/main.go
-// ---------------------------------------------------------
-// Ini adalah entrypoint utama aplikasi backend AMK-BE.
-// Tugas file ini nantinya:
-//   - Memuat konfigurasi dari file .env (APP_PORT, DB, dsb)
-//   - Memanggil config.InitDB() untuk membuka koneksi MySQL via GORM
-//   - Menginisialisasi web server Fiber
-//   - Mendaftarkan semua route dari modul:
-//       * auth (login, user, role, lupa password)
-//       * hcgs (data pegawai)
-//       * fat (jurnal umum / modul keuangan)
-//   - Menjalankan HTTP server di port yang ditentukan APP_PORT.
-// File ini akan "menghubungkan" semua modul agar menjadi satu aplikasi monolith.
+import (
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/ryansyahrullah/amk-be/auth"
+	"github.com/ryansyahrullah/amk-be/config"
+	"github.com/ryansyahrullah/amk-be/fat"
+	"github.com/ryansyahrullah/amk-be/hcgs"
+)
 
 func main() {
-	// TODO:
-	// - Load .env
-	// - Panggil config.InitDB()
-	// - Buat instance Fiber
-	// - Register routes: auth.RegisterRoutes(app), hcgs.RegisterRoutes(app), fat.RegisterRoutes(app)
-	// - app.Listen(":" + APP_PORT)
+	cfg := config.MustLoad()
+	db, err := config.InitDB()
+	if err != nil {
+		log.Fatalf("failed to connect database: %v", err)
+	}
+
+	app := fiber.New()
+
+	auth.RegisterRoutes(app, db, cfg)
+	hcgs.RegisterRoutes(app, db, cfg)
+	fat.RegisterRoutes(app, db, cfg)
+
+	if err := app.Listen(":" + cfg.AppPort); err != nil {
+		log.Fatalf("fiber server stopped: %v", err)
+	}
 }

@@ -1,14 +1,34 @@
 package handler
 
-// File: auth/handler/auth_handler.go
-// ---------------------------------------------------------
-// Berisi HTTP handler untuk proses login (dan mungkin logout).
-// Contoh endpoint yang di-handle:
-//   - POST /auth/login
-//
-// Alur umum:
-//   - Parse body JSON ke dto.LoginRequest
-//   - Panggil auth/service/auth_service.go untuk validasi user & password
-//   - Jika sukses, balikan token JWT + data user dalam format dto.AuthLoginResponse.
-//
-// File ini menjadi penghubung antara dunia HTTP (Fiber) dengan logic di auth_service.
+import (
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/ryansyahrullah/amk-be/auth/dto"
+	"github.com/ryansyahrullah/amk-be/auth/service"
+	"github.com/ryansyahrullah/amk-be/pkg/utils"
+)
+
+// AuthHandler menampung endpoint terkait autentikasi.
+type AuthHandler struct {
+	service *service.AuthService
+}
+
+// NewAuthHandler membuat handler baru.
+func NewAuthHandler(service *service.AuthService) *AuthHandler {
+	return &AuthHandler{service: service}
+}
+
+// Login memproses POST /auth/login.
+func (h *AuthHandler) Login(c *fiber.Ctx) error {
+	var req dto.AuthLoginRequest
+	if err := c.BodyParser(&req); err != nil {
+		return utils.Error(c, fiber.StatusBadRequest, "invalid body")
+	}
+
+	resp, err := h.service.Login(c.Context(), req)
+	if err != nil {
+		return utils.Error(c, fiber.StatusUnauthorized, err.Error())
+	}
+
+	return utils.Success(c, resp)
+}
