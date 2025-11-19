@@ -1,20 +1,21 @@
 package model
 
-// File: auth/model/permission.go
-// ---------------------------------------------------------
-// File ini akan menyimpan definisi struct RolePermission.
-// Struct RolePermission dipetakan ke tabel:
-//   - Nama tabel: au_role_permissions
-//   - Kolom: id, role_id, table_name, can_create, can_read, can_update, can_delete, created_at, updated_at
-//
-// Tujuan tabel ini:
-//   - Mengatur role tertentu boleh melakukan operasi CRUD apa pada tabel tertentu.
-//   - Contoh:
-//       * Pegawai:  can_read = 1, can_update = 0 pada table_name = "hc_pegawai"
-//       * Admin HC-GS: can_create/update/delete pada "hc_pegawai"
-//       * Direktur: hanya can_read pada "hc_pegawai" dan "fa_jurnal_umum"
-//
-// File ini sangat berkaitan dengan:
-//   - auth/model/role.go (karena ada role_id)
-//   - auth/repository/permission_repository.go (query DB permission)
-//   - pkg/middleware/permission_middleware.go (validasi hak akses berdasarkan role & tabel).
+import "time"
+
+// RolePermission mendefinisikan hak akses role terhadap tabel tertentu.
+type RolePermission struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	RoleID    uint      `json:"role_id"`
+	Table     string    `gorm:"column:table_name;size:120" json:"table_name"`
+	CanCreate bool      `json:"can_create"`
+	CanRead   bool      `json:"can_read"`
+	CanUpdate bool      `json:"can_update"`
+	CanDelete bool      `json:"can_delete"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// TableName memastikan penggunaan tabel au_role_permissions.
+func (RolePermission) TableName() string {
+	return "au_role_permissions"
+}
